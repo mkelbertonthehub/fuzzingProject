@@ -1,0 +1,22 @@
+\begin{thebibliography}{1}
+
+\bibitem{snooze}
+{\sc Banks, G., Cova, M., Felmetsger, V., Almeroth, K., Kemmerer, R., and
+  Vigna, G.}
+\newblock Snooze: Toward a stateful network protocol fuzzer.
+\newblock In {\em of Lecture Notes in Computer Science\/} (2006), Springer,
+  pp.~343--358.
+
+\bibitem{autofuzz}
+{\sc Gorbunov, S., and Rosenbloom, A.}
+\newblock {Autofuzz: Automated network protocol fuzzing framework}.
+\newblock {\em IJCSNS 10}, 8 (2010), 239.
+
+\bibitem{secfuzz}
+{\sc Tsankov, P., Dashti, M.~T., and Basin, D.}
+\newblock Secfuzz: Fuzz-testing security protocols.
+\newblock In {\em Proceedings of the 7th International Workshop on Automation
+  of Software Test\/} (Piscataway, NJ, USA, 2012), AST '12, IEEE Press,
+  pp.~1--7.
+
+\end{thebibliography}
