@@ -21,7 +21,7 @@
 
 % This version uses the latex2e styles, not the very ancient 2.09 stuff.
 \documentclass[letterpaper,twocolumn,10pt]{article}
-\usepackage{usenix,epsfig}
+\usepackage{usenix,epsfig,url}
 \begin{document}
 
 %don't want date printed
@@ -51,8 +51,7 @@ University of Utah
 
 
 \subsection*{Abstract}
-Your Abstract Text Goes Here.  Just a few facts.
-Whet our appetites.
+Fuzz testing, or fuzzing, is a simple method to find bugs and vulnerabilities in programs. We use fuzzing methods to attempt to identify security vulnerabilities in two Wi-Fi cameras. 
 
 \section{Introduction}
 \subsection{Motivation}
@@ -62,22 +61,62 @@ Because the world has become more internet-connected than ever, fuzz testing can
 
 \subsection{Problem}
 
+<<<<<<< HEAD
 In this project, we designed, implemented and evaluated an automated tester for a networking service. This is meant to evaluate the value of fuzz testing on a network, with the goal of hopefully finding a previously undiscovered bug. A very basic and highly proliferated technology deployed on the internet is an HTTP server. But because of this prevalence, popular servers such as Apache have been thoroughly tested and documented. However, more and more devices are being connected, with an uptake in the Internet of Things (IoT) mentality. Therefore, we chose wireless IP cameras as the platform to fuzz test. These are some of the most widely available IoT devices for consumers. We found that the two devices we purchased ran basic HTTP servers, and we could use tools made for these applications. 
+=======
+For this project, we explored the possibility of implementing and evaluating an automated tester for a networking service. This is meant to evaluate the value of fuzz testing on a network, with the goal of hopefully finding a previously undiscovered bug. A very basic and highly proliferated technology deployed on the internet is an HTTP server. But because of this prevalence, popular servers such as Apache have been thoroughly tested and documented. However, more and more devices are being connected, with an uptake in the Internet of Things (IoT) mentality. Therefore, we chose wireless IP cameras as the platform to fuzz test. These are some of the most widely available IoT devices for consumers. We found that the two devices we purchased ran basic HTTP servers, and we could use tools made for these applications.
+
+One reason we thought it would be interesting as well as important to test these IP cameras is because they are widely used in security systems today. It would likely be a bad thing if an outsider could shut down or otherwise impair the function of your security cameras. One main goal we had during this experiment was to identify security vulnerabilities in the cameras through fuzzing, to find out if a potential attacker could impair the camera's function.   
+
+>>>>>>> origin/master
 
 
 \section{Related Work}
+??CAN we find a paper or related work where other IoT devices were similarly tested for security vulnerabilities??
+
 
 We looked at papers like SecFuzz~\cite{secfuzz} and SNOOZE~\cite{snooze} as well as tools like AutoFuzz~\cite{autofuzz}
 
-\section{Proposed Solution}
+\section{Experiment Setup}
+In this section we describe details about the setup of our experiment, the
+cameras we used, how we gathered information and discovered interesting ways to fuzz test them, and the tools and programs that aided us.  
 
-Use solutions for HTTP fuzzing, e.g. Pathoc, to fuzz the HTTP servers running on webcams.
+\subsection{IP Cameras}
+The two cameras we purchased were a D-Link Day \& Night Wi-Fi Camera (DCS-934L)~\cite{dlinkCam} and a ???..............???? . Though both cameras supported many network protocols, we focused on fuzzing the \textit{alphapd} and \textit{mini-httpd} HTTP servers and the application layers of each of the cameras. 
+
+
+\subsubsection{Information Gathering}
+When we first purchased the cameras, we set them up for normal operation and began playing with the provided tools to learn about how they worked. Each of the cameras, after being set up properly, were assigned IP addresses where their main web pages could be accessed. Access to these web pages is protected by username/password combinations defined during the setup process. Once logged in, a number of functions and features are available. For example, on the D-Link camera, the user can manually select day or night mode, enable or disable motion or sound detection, turn on and off notification emails, etc. 
+
+The first step in identifying network protocols that would be interesting and `fuzzable' was to capture some traffic from the cameras in Wireshark~\cite{wireshark}. We also looked at the HTML source behind the web pages to discover potential attack points. We discovered several `.cgi' pages under the main HTML pages that were the primary interfaces to the camera functions. 
+
+Though the cameras boasted support for many network protocols, most of the functionality was very limited and only supported client protocols. Both cameras did have small HTTP servers, though, which are much more interesting to fuzz. We discovered early on that authentication tokens could be easily exposed, making deeper application level access possible. We chose to enter the realm of penetration testing a bit because we thought the application layer would potentially reveal more interesting security flaws.  These were some primary reasons we chose to focus on fuzzing the HTTP servers and application layers. 
+
+ 
+
+\subsubsection{Tools}
+We began by exploring a number of available network fuzzers, including AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathoc~\cite{pathod}. AFL was complex and we were unable to get it running. AutoFuzz had built in support for MSN, SMTP, and FTP protocols. Because neither of the cameras had servers for these protocols we chose not to use AutoFuzz. Pathoc turned out to be fairly simple and straightforward to use, and so we chose to focus on this tool to drive our testing. 
+
+Because pathoc is a Linux, command line driven program, we began coding up a Bash script to structure inputs to pathoc, and collect and analyze outputs. 
+
 
 \section{Implementation}
 
 We used Pathoc for crafted malice towards the mini\_httpd and DLink servers. Pathoc has a built in function to do many requests at one time, but we found that this method had all of the GET requests on a single TCP connection, and therefore made it more difficult to diagnose in programs such as Wireshark. Therefore, since Pathoc can easily be implemented using the command line interface, a shell script was used as a wrapper that would invoke Pathoc multiple times, giving a new HTTP request everytime. In this way, we could also control fairly easily the commands for Pathoc to run, instead of having a single command run multiple times.
 
+This is where we could describe in more detail specifics about the types of fuzzing we accomplished, the control loop structures of the scripts, categories of data we recorded, pages or applications that we targeted, etc.
+
+
+
+
 \section{Results}
+
+
+Perhaps the first major discovery we made when in the information-gathering stage of the project was that each of the cameras used HTTP Basic or Digest access authentication, which encodes the username:password combinations. Wireshark was able to capture the authentication for logging into the cameras in plain text. This has important ramifications, because all an attacker would need to do would be to use Wireshark or some other network protocol analyzer to capture traffic on the network the camera is on. Once the authentication token is discovered, an attacker could append it to the header of any HTTP message desired, and the camera would accept it as authentic. 
+
+
+
+
 
 {\footnotesize \bibliographystyle{acm}
 \bibliography{biblio}}
