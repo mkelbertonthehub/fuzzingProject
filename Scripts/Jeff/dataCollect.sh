@@ -8,16 +8,20 @@ echo "Aggregate Data file" >> "DataAggregate_$NOW.txt"
 
 numTimeouts=$(grep -c "Timeout" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
 echo "Timeouts:$numTimeouts" >> "DataAggregate_$NOW.txt"
-
+num200=$(grep -c "HTTP/1.[0-1] 200" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
+echo "HTTP 200 Returns:$num200" >> "DataAggregate_$NOW.txt"
 num2xx=$(grep -c "HTTP/1.[0-1] 2[0-9][1-9]" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
 echo "HTTP (non-200) 2XX Returns:$num2xx" >> "DataAggregate_$NOW.txt"
 num300=$(grep -c "HTTP/1.[0-1] 3" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
 echo "HTTP 3XX Returns:$num300" >> "DataAggregate_$NOW.txt"
 num400=$(grep -c "HTTP/1.[0-1] 4" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
 echo "HTTP 4XX Returns:$num400" >> "DataAggregate_$NOW.txt"
+numNull=$(grep -c "(null)" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
+echo "(null) Returns:$numNull" >> "DataAggregate_$NOW.txt"
 num500=$(grep -c "HTTP/1.[0-1] 5" *[0-9].txt | awk 'BEGIN{FS=":"}{x+=$2}END{print x}')
 echo "HTTP 5XX Returns:$num500" >> "DataAggregate_$NOW.txt"
-
+numTests=$(grep "Total Tests" *[0-9].txt | awk 'BEGIN{FS=":Total Tests:"}{x+=$2}END{print x}')
+echo "Total Number of Tests:$numTests">> "DataAggregate_$NOW.txt"
 echo ""
 tail  --lines=8 "DataAggregate_$NOW.txt"
 

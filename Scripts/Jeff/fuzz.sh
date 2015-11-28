@@ -146,12 +146,16 @@ echo "Total Tests:$max" >> "log_$NOW.txt"
 echo "Elapsed Time: $(($ENDTIME - $STARTTIME)) seconds" >> "log_$NOW.txt"
 numTimeouts=$(grep -c "Timeout" "log_$NOW.txt")
 echo "Timeouts:$numTimeouts" >> "log_$NOW.txt"
+num200=$(grep -c "HTTP/1.[0-1] 200" "log_$NOW.txt")
+echo "HTTP 200 Returns:$num200" >> "log_$NOW.txt"
 num2xx=$(grep -c "HTTP/1.[0-1] 2[0-9][1-9]" "log_$NOW.txt")
 echo "HTTP (non-200) 2XX Returns:$num2xx" >> "log_$NOW.txt"
 num300=$(grep -c "HTTP/1.[0-1] 3" "log_$NOW.txt")
 echo "HTTP 3XX Returns:$num300" >> "log_$NOW.txt"
 num400=$(grep -c "HTTP/1.[0-1] 4" "log_$NOW.txt")
 echo "HTTP 4XX Returns:$num400" >> "log_$NOW.txt"
+numNull=$(grep -c "(null)" "log_$NOW.txt")
+echo "(null) Returns:$numNull" >> "log_$NOW.txt"
 num500=$(grep -c "HTTP/1.[0-1] 5" "log_$NOW.txt")
 echo "HTTP 5XX Returns:$num500" >> "log_$NOW.txt"
 
