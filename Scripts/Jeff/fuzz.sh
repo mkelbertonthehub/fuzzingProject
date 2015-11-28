@@ -100,7 +100,7 @@ do
   ;;
 4)
  #post
-  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/audiocontrol.cgi:b"Audio Mute=$r":h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
+  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/audiocontrol.cgi:b"Audio Mute='$r'":h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
   ;;  
 5)
 #long post body
@@ -109,7 +109,7 @@ do
  ;;  
 *)
   #post
-  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/nightmodecontrol.cgi:b"IRLed=$r":h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
+  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/nightmodecontrol.cgi:b"IRLed='$r'":h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
   ;;
 esac
  
