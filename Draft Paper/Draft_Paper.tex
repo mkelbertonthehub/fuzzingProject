@@ -133,10 +133,14 @@ We found the following cgi pages for the Pyle camera:
 \end{enumerate}
 
 
-\subsubsection{Tools}
+\subsection{Tools}
 We began by exploring a number of available network fuzzers, including AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathoc~\cite{pathod}. AFL was complex and we were unable to get it running. AutoFuzz had built in support for MSN, SMTP, and FTP protocols. Because neither of the cameras had servers for these protocols we chose not to use AutoFuzz. Pathoc turned out to be fairly simple and straightforward to use, and so we chose to focus on this tool to drive our testing. 
 
 Because pathoc is a Linux, command line driven program, we began coding up a Bash script to structure inputs to pathoc, and collect and analyze outputs. 
+
+
+[TODO]write more about pathoc, how we drove pathoc. We can also include raspberry pi work. 
+
 
 
 \section{Implementation}
@@ -149,7 +153,7 @@ We also wrote a script to scour the log files and aggregate the total number of 
 
  
 [EDIT ME]This is where we could describe in more detail specifics about the types of fuzzing we accomplished, the control loop structures of the scripts, categories of data we recorded, pages or applications that we targeted, etc.
-
+This would be a good place to mention the different categories of fuzzing: pure random, why we chose get/post at different application levels.
 
 
 
@@ -160,6 +164,17 @@ Perhaps the first major discovery we made when in the information-gathering stag
 
 [EDIT ME]
 As of today [Nov 28,2015] we have run about 18,000 fuzzing tests. We are in the process of aggregating data and trying to understand how best to display it. We have not as of yet found any input that would disable the cameras completely, though some inputs do cause slow downs. Figure~\ref{fig:Pyle_Good_CGI} sums up the distribution of three separate test run sizes for CGI commands with good numeric inputs (within range 1-100). Figure~\ref{fig:Pyle_Rand_CGI} shows the same number of tests for purely random alpha-numeric commands.
+
+
+This would be a good place to mention average times for each type of fuzzing tests. 
+
+Draw some conclusions from the data. Find bugs? Or the conclusion could be that we found interesting errors, or perhaps we didn't find any bugs. 
+
+\section{Conclusion}
+We began with the hypothesis... we presented ... our results showed...
+
+Mention the idea for recording the video to measure lag and potential for DoS attacks. 
+
 \begin{figure*}
 \centering
 \includegraphics[width=0.9\linewidth]{Pyle_Good_CGI}
