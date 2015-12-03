@@ -77,14 +77,17 @@ else #start fuzzing DLINK camera
 
 for (( i=1; i<=$max; i++))
 do
-  r=$(( $RANDOM % 2 )) #Random [0-1]
+  r=$(( $RANDOM % 100)) #Random [0-99]
   d=$(( ($i*100)/$max ))
   echo -ne "Percent Done: $d \r"
-  modCase=$(( ($i % 7) )) 
+ modCase=$(( ($i % 7) )) 
+#modCase=3 #force only one case for now
  case $modCase in
 0)
-  #valid request
-  pathoc -n 1 -t 5 -e -q -p $ip 'get:/image/jpeg.cgi:b@100,ascii:h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" '  | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
+  #valid request with random 50 chars
+ pathoc -n 1 -t 5 -e -q -p $ip 'get:/image/jpeg.cgi:b@100,ascii:ir,@50h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" '  | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
+  
+  #pathoc -n 1 -t 5 -e -q -p $ip 'get:/:b@100,ascii:ir,@5h"Authorization"="Basic YWR" '  | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
   ;;
 1)
   #long get request
@@ -109,7 +112,7 @@ do
  ;;  
 *)
   #post
-  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/nightmodecontrol.cgi:b"IRLed='$r'":h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
+  pathoc -n 1 -t 5 -e -p -q  $ip 'post:/nightmodecontrol.cgi:b"IRLed='$r'":ir,@5:h"Authorization"="Basic YWRtaW46YjNZb25kQ2FtZmluaXR5TUtF" ' | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.[0-1] 2' &> /dev/null
   ;;
 esac
  
@@ -123,8 +126,13 @@ esac
 		#echo "$last_out" >> "log_$NOW""_good.txt"
 	else
 		bad=$(( $bad+1 ))
-		last_out=$(<last_cmd.txt)
-		echo "$last_out" >> "log_$NOW""_bad.txt"
+		grep "HTTP/1.[0-1] 5\|Invalid server response\|Error connecting to" last_cmd.txt
+		if [ $? == 0 ]; then
+
+		    last_out=$(<last_cmd.txt)
+		    echo "$last_out" >> "log_$NOW""_bad.txt"
+		fi    
+		
 	fi		
 	echo -ne "Percent Done: $d  \tGood: $good   \tBad: $bad \r"
  
