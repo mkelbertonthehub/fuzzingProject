@@ -68,10 +68,17 @@ One reason we thought it would be interesting as well as important to test these
 
 
 \section{Related Work}
+One of the first attempts at a random input tester was done by Miller et. al.~\cite{millerUNIX}. Their work consisted of creating small programs for UNIX that would generate ransom strings that would then be piped to various programs of a few UNIX distributions. They found, at the time of publication in 1990, that they could cause roughly a third of the tested utilities to crash or hang with the generated inputs, some of which even cause UNIX crashes.
+
+SNOOZE~\cite{snooze} is a network fuzzing protocol that is used to test the security of network protocols. In their approach, they show how the true random testing of fuzzing would not be desirable for the protocols in which they wanted to test. Therefore, they created a method in which the state machines of protocols are defined, and then transversed through the testing. SNOOZE chose to focus on the Session Initiation Protocol (SIP), which is a key protocol for VoIP calls.
+
+SecFuzz~\cite{secfuzz} was another implementation of testing security protocols. For their tests, they focused on the Internet Key Exchange (IKE) protocols, and gave their fuzzer the necessary cryptographic functions. Their method entailed sending correct inputs in order to get the state-driven protocol into a desired state, and then slowly mutate good inputs for that state until something undesirable happened. They relied on what they called ``fuzz operators" that would set certain fields, payloads or messages to certain values (eg. random or zero) to try and coax an undesirable response.
+
+AspFuzz~\cite{aspfuzz} was another type of fuzzer, but this one was created and tested in protocols such as POP and HTTP. Their implementation had a user supply the protocol specification. It would then generate attacks that would either be long strings, known incorrect characters, known out of bounds numbers, format strings, changing the number of fields, and removing delimiters. 
+
+While these papers looked like they had gathered results from their fuzz testing, they did not release their prototype to the public, and therefore we had to find other publicly available tools that would be able to create fuzz tests. A few of the papers read, such as AspFuzz, mentioned the Peach Fuzzing Platform~\cite{peach} as a tool widely used in this type of testing. We were also able to find widely available tools like AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathod/Pathoc~\cite{pathoc}. More discussion on these tools is presented in section 3.1.2.
+
 ??CAN we find a paper or related work where other IoT devices were similarly tested for security vulnerabilities??
-
-
-We looked at papers like SecFuzz~\cite{secfuzz} and SNOOZE~\cite{snooze} as well as tools like AutoFuzz~\cite{autofuzz}
 
 \section{Experiment Setup}
 In this section we describe details about the setup of our experiment, the
@@ -147,7 +154,7 @@ We used Pathoc for crafted malice towards the mini\_httpd and DLink servers. Pat
 
 We wrote a bash script that would take the IP address, camera ID (1=PYLE, 2=DLINK), and number of fuzzing tests as arguments. Each camera had its own set of fuzzing commands, to make more use of the details we gathered from each individual cameras web page.
 
-We also wrote a script to scour the log files and aggregate the total number of responses in various categories. We used some of this data for the Pyle camera to generate figures~\ref{fig:Pyle_Good_CGI} and ~\ref{fig:Pyle_Rand_CGI}. 
+We also wrote a script to scour the log files and aggregate the total number of responses in various categories. We used some of this data for the Pyle camera to generate tables~\ref{tab:Pyle_Good_CGI} and ~\ref{tab:Pyle_Rand_CGI}. 
 
  
 [EDIT ME]This is where we could describe in more detail specifics about the types of fuzzing we accomplished, the control loop structures of the scripts, categories of data we recorded, pages or applications that we targeted, etc.
