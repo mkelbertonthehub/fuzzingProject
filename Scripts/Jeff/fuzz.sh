@@ -45,7 +45,7 @@ do
 	d=$(( ($i*100)/$max ))
 	r=$(( $RANDOM % 100 + 1 )) #Random [1..100]
 	
-pathoc -n 1 -t 5 -e -p -q $ip "$cmd$r$b1$auth" | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.1 2*' &> /dev/null
+pathoc -n 1 -t 5 -e -p -q $ip "$cmd$r$b1$auth" | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.1 200' &> /dev/null
 
 	if [ $? == 0 ]; then
 		good=$(( $good+1 ))
