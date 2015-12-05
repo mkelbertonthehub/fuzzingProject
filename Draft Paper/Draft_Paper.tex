@@ -51,7 +51,7 @@ University of Utah
 
 
 \subsection*{Abstract}
-Fuzz testing, or fuzzing, is a simple method to find bugs and vulnerabilities in programs. We use fuzzing methods to attempt to identify security vulnerabilities in two Wi-Fi cameras. 
+Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs. We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the efficacy of fuzz testing on these recent types of IoT deployments.
 
 \section{Introduction}
 \subsection{Motivation}
@@ -68,10 +68,17 @@ One reason we thought it would be interesting as well as important to test these
 
 
 \section{Related Work}
+One of the first attempts at a random input tester was done by Miller et. al.~\cite{millerUNIX}. Their work consisted of creating small programs for UNIX that would generate ransom strings that would then be piped to various programs of a few UNIX distributions. They found, at the time of publication in 1990, that they could cause roughly a third of the tested utilities to crash or hang with the generated inputs, some of which even cause UNIX crashes.
+
+SNOOZE~\cite{snooze} is a network fuzzing protocol that is used to test the security of network protocols. In their approach, they show how the true random testing of fuzzing would not be desirable for the protocols in which they wanted to test. Therefore, they created a method in which the state machines of protocols are defined, and then transversed through the testing. SNOOZE chose to focus on the Session Initiation Protocol (SIP), which is a key protocol for VoIP calls.
+
+SecFuzz~\cite{secfuzz} was another implementation of testing security protocols. For their tests, they focused on the Internet Key Exchange (IKE) protocols, and gave their fuzzer the necessary cryptographic functions. Their method entailed sending correct inputs in order to get the state-driven protocol into a desired state, and then slowly mutate good inputs for that state until something undesirable happened. They relied on what they called ``fuzz operators" that would set certain fields, payloads or messages to certain values (eg. random or zero) to try and coax an undesirable response.
+
+AspFuzz~\cite{aspfuzz} was another type of fuzzer, but this one was created and tested in protocols such as POP and HTTP. Their implementation had a user supply the protocol specification. It would then generate attacks that would either be long strings, known incorrect characters, known out of bounds numbers, format strings, changing the number of fields, and removing delimiters. 
+
+While these papers looked like they had gathered results from their fuzz testing, they did not release their prototype to the public, and therefore we had to find other publicly available tools that would be able to create fuzz tests. A few of the papers read, such as AspFuzz, mentioned the Peach Fuzzing Platform~\cite{peach} as a tool widely used in this type of testing. We were also able to find widely available tools like AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathod/Pathoc~\cite{pathoc}. More discussion on these tools is presented in section 3.1.2.
+
 ??CAN we find a paper or related work where other IoT devices were similarly tested for security vulnerabilities??
-
-
-We looked at papers like SecFuzz~\cite{secfuzz} and SNOOZE~\cite{snooze} as well as tools like AutoFuzz~\cite{autofuzz}
 
 \section{Experiment Setup}
 In this section we describe details about the setup of our experiment, the
@@ -82,13 +89,13 @@ The two cameras we purchased were a D-Link Day \& Night Wi-Fi Camera (DCS-934L)~
 
 
 \subsubsection{Information Gathering}
-When we first purchased the cameras, we set them up for normal operation and began playing with the provided tools to learn about how they worked. Each of the cameras, after being set up properly, were assigned IP addresses where their main web pages could be accessed. Access to these web pages is protected by username/password combinations defined during the setup process. Once logged in, a number of functions and features are available. For example, on the D-Link camera, the user can manually select day or night mode, enable or disable motion or sound detection, turn on and off notification emails, etc. 
+When we first purchased the cameras, we set them up for normal operation and began playing with the provided tools to learn about how they worked. Each of the cameras, after being set up properly, were assigned IP addresses where their main web pages could be accessed. Access to these web pages is protected by username/password combinations defined during the setup process. Once logged in, a number of functions and features are available. For example, on the D-Link camera, the user can manually select day or night mode, enable or disable motion or sound detection, turn on and off notification emails, etc. The Pyle camera also allowed Panning and Tilting via the network.
 
-The first step in identifying network protocols that would be interesting and `fuzzable' was to capture some traffic from the cameras in Wireshark~\cite{wireshark}. We also looked at the HTML source behind the web pages to discover potential attack points. We discovered several `.cgi' pages under the main HTML pages that were the primary interfaces to the camera functions. 
+Though the cameras boasted support for many network protocols, most of the functionality was very limited and only supported client protocols. Both cameras did have small HTTP servers, though, which are much more interesting to fuzz, as they will more readily accept the inputs that we would give them. 
 
-Though the cameras boasted support for many network protocols, most of the functionality was very limited and only supported client protocols. Both cameras did have small HTTP servers, though, which are much more interesting to fuzz. We discovered early on that authentication tokens could be easily exposed, making deeper application level access possible. We chose to enter the realm of penetration testing a bit because we thought the application layer would potentially reveal more interesting security flaws.  These were some primary reasons we chose to focus on fuzzing the HTTP servers and application layers. 
+The first step in identifying network protocols that would be interesting and `fuzzable' was to capture some traffic from the cameras in Wireshark~\cite{wireshark}. We also looked at the HTML source behind the web pages to discover potential attack points. We discovered early on that authentication tokens could be easily exposed, making deeper application level access possible. This was possible because the cameras only used Basic Authentication, where the encoded user name and password are store in plaintext in the requests. From here, we could automate the fuzzer to get past the HTTP ``front door" and send sensitive commands that require authentication. This way, we could also test the application layer being run on these camera, rather than the HTTP protocol layer. We discovered several `.cgi' pages under the main HTML pages that were the primary interfaces to the camera functions., and these pages were used to fuzz application layers.
 
-We found the following cgi pages with valid HTTP POST commands for the DLINK camera: 
+We found the following cgi pages for the DLINK camera: 
 
 
 \begin{enumerate}
@@ -132,29 +139,35 @@ We found the following cgi pages for the Pyle camera:
 	\item camera\_control.cgi?param='+param+'\&value='+value; 
 \end{enumerate}
 
-
-\subsection{Tools}
-We began by exploring a number of available network fuzzers, including AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathoc~\cite{pathod}. AFL was complex and we were unable to get it running. AutoFuzz had built in support for MSN, SMTP, and FTP protocols. Because neither of the cameras had servers for these protocols we chose not to use AutoFuzz. Pathoc turned out to be fairly simple and straightforward to use, and so we chose to focus on this tool to drive our testing. 
-
-Because pathoc is a Linux, command line driven program, we began coding up a Bash script to structure inputs to pathoc, and collect and analyze outputs. 
+It is important to note that the DLink camera implemented the CGI commands using a HTTP POST method, using the parameters that were passed to it from the application with a command in the body. The Pyle camera, however, took the parameters from the application and then formatted a HTTP GET command, with the CGI commands in the HTTP path, and no body.
 
 
-[TODO]write more about pathoc, how we drove pathoc. We can also include raspberry pi work. 
+\subsubsection{Tools}
+We began by exploring a number of available network fuzzers, including Peach, AutoFuzz, American Fuzzy Lop (AFL), and Pathoc. In investigating AFL, we found that it was a tool mainly for file testing, where good files as inputs to tools would be mutated and input back into a program for evaluation. We could have used this to create a file with a valid GET request, ran AFL to mutate, and send the file through something like netcat, but this would be more difficult to control in what get sent to the servers. 
 
+AutoFuzz had built in support for MSN, SMTP, and FTP protocols, and relied on capturing actual traffic in order to create a state machine. While we did find that both of the cameras used in testing supported both SMTP and FTP, they were only clients, and therefore less likely to accept inputs. We were not able to find HTTP support for AutoFuzz, so this method was abandoned.
+
+Peach was another platform that was looked at extensively. The peach platform relies on ``pits" that define the fields in the standard being tested, as well as the procedure that should be used in testing. Their website shows that they have support for protocols such as HTTP, DHCP, IPv4, IPv6, and IoT protocols like CoAP. However, these pits are how this company makes money, and we were not willing to purchase them in order to evaluate if they would work for us or not.
+
+Pathoc turned out to be fairly simple and straightforward to use, as it was just a command line interface tool that generated HTTP requests such as GET and POST. Because we focused on HTTP, this single protocol application was still very appealing to us. This program allowed us to specify the type of HTTP command, and inject whatever we wanted into the header and body fields while still creating a command with valid syntax. It also has fuzzing capabilities as it is able to inject random bytes anywhere in the request, as well as generate random strings of a desired length and place them in portions of a request. Because of its ease of use and the capability to be used in a simple Bash script, we chose Pathoc v0.14 as our fuzzing platform.
 
 
 \section{Implementation}
 
+\subsection{Pathoc Structure}
 We used Pathoc for crafted malice towards the mini\_httpd and DLink servers. Pathoc has a built in function to do many requests at one time, but we found that this method had all of the GET requests on a single TCP connection, and therefore made it more difficult to diagnose in programs such as Wireshark. Therefore, since Pathoc can easily be implemented using the command line interface, a shell script was used as a wrapper that would invoke Pathoc multiple times, giving a new HTTP request everytime. In this way, we could also control fairly easily the commands for Pathoc to run, instead of having a single command run multiple times.
 
 We wrote a bash script that would take the IP address, camera ID (1=PYLE, 2=DLINK), and number of fuzzing tests as arguments. Each camera had its own set of fuzzing commands, to make more use of the details we gathered from each individual cameras web page.
 
-We also wrote a script to scour the log files and aggregate the total number of responses in various categories. We used some of this data for the Pyle camera to generate figures~\ref{fig:Pyle_Good_CGI} and ~\ref{fig:Pyle_Rand_CGI}. 
+We also wrote a script to scour the log files and aggregate the total number of responses in various categories. We used some of this data for the Pyle camera to generate tables~\ref{tab:Pyle_Good_CGI} and ~\ref{tab:Pyle_Rand_CGI}. 
 
  
 [EDIT ME]This is where we could describe in more detail specifics about the types of fuzzing we accomplished, the control loop structures of the scripts, categories of data we recorded, pages or applications that we targeted, etc.
-This would be a good place to mention the different categories of fuzzing: pure random, why we chose get/post at different application levels.
 
+\subsection{Platforms}
+The primary vehicle for running Pathoc in a Bash script was using Oracle's VM VirtualBox 5.0.10 running on two separate Windows 10 laptops. One computer ran a 32-bit Ubuntu 12.04 VM with 2.0GiB of dedicated RAM. The other computer was using the All-in-one SDN App Development Starter VM, an image based off of 64-bit Ubuntu 14.04, from SDNHub.org.
+
+Because these tests can take a significant amount of time, and these computers are also used for other things, a third platform was used to collect fuzzing data. A Raspberry Pi 2 model B (RPi) was used so that Pathoc could be run for an extended amount of time (e.g. over 24 hours) without the platform needing to be used for something else. The Raspberry Pi was running Raspbian, a derivation of Debian, kernel version 4.1.7. The Pi used a USB 802.11n WiFi adapter to connect to the local network, and the fuzzing script and repository for the log files were placed in a connected 16GB USB flash drive.
 
 
 \section{Results}
@@ -163,35 +176,82 @@ This would be a good place to mention the different categories of fuzzing: pure 
 Perhaps the first major discovery we made when in the information-gathering stage of the project was that each of the cameras used HTTP Basic or Digest access authentication, which encodes the username:password combinations. Wireshark was able to capture the authentication for logging into the cameras in plain text. This has important ramifications, because all an attacker would need to do would be to use Wireshark or some other network protocol analyzer to capture traffic on the network the camera is on. Once the authentication token is discovered, an attacker could append it to the header of any HTTP message desired, and the camera would accept it as authentic. 
 
 [EDIT ME]
-As of today [Nov 28,2015] we have run about 18,000 fuzzing tests. We are in the process of aggregating data and trying to understand how best to display it. We have not as of yet found any input that would disable the cameras completely, though some inputs do cause slow downs. Figure~\ref{fig:Pyle_Good_CGI} sums up the distribution of three separate test run sizes for CGI commands with good numeric inputs (within range 1-100). Figure~\ref{fig:Pyle_Rand_CGI} shows the same number of tests for purely random alpha-numeric commands.
+As of today [Nov 28,2015] we have run about 18,000 fuzzing tests. We are in the process of aggregating data and trying to understand how best to display it. We have not as of yet found any input that would disable the cameras completely, though some inputs do cause slow downs. Table~\ref{tab:Pyle_Good_CGI} sums up the distribution of three separate test run sizes for CGI commands with good numeric inputs (within range 1-100). Table~\ref{tab:Pyle_Rand_CGI} shows the same number of tests for purely random alpha-numeric commands.
 
+An interesting result was also the difference in the time taken to run the same command on a Ubuntu VM comapred to the Raspberry Pi. We noticed that although the small computer is very powerful, it had a significant time overhead in our setup. The results of a test consisting of 5000 valid CGI commands to the Pyle camera is shown in table~\ref{tab:VMvsPi}. As we can see, they both generated a similar amount of HTTP responses in the 400 and 500 range, but the Rpi took almost 450\% longer to do it. We suspect it may have to do with the smaller computer having slower I/O speeds for both the USB flash drive and the network interface. All USB ports are also run on one controller, leading to a slowdown if many are used at the same time.
 
-This would be a good place to mention average times for each type of fuzzing tests. 
-
-Draw some conclusions from the data. Find bugs? Or the conclusion could be that we found interesting errors, or perhaps we didn't find any bugs. 
-
-\section{Conclusion}
-We began with the hypothesis... we presented ... our results showed...
-
-Mention the idea for future work recording the video to measure lag and potential for DoS attacks. Future work in fuzzing other protocols. 
-
-\begin{figure*}
+\begin{table}
 \centering
-\includegraphics[width=0.9\linewidth]{Pyle_Good_CGI}
-\caption{ 5550 fuzz tests on Pyle camera with valid commands}
-\label{fig:Pyle_Good_CGI}
-\end{figure*}
+	\begin{tabular}{ |c|c|c|c|c| }
+		\hline
+		\# Tests & 50 & 500 & 5000 & 50000 \\
+		\hline
+		\hline
+		Time(s) & 87 & 865 & 3721 & 98260\\
+		Timeouts & 1 & 5 & 187 & 3954 \\
+		HTTP 3XX & 0 & 0 & 0 & 0\\
+		HTTP 4XX & 13 & 106 & 1236 & 12284\\
+		HTTP 5XX & 1 & 5 & 69 & 628\\
+		\hline
+	\end{tabular}
+	\caption{55550 fuzz tests on Pyle camera with CGI commands within accepted range}
+	\label{tab:Pyle_Good_CGI} 
+\end{table}
 
-\begin{figure*}
+\begin{table}
 \centering
-\includegraphics[width=0.9\linewidth]{Pyle_Rand_CGI}
-\caption{5550 fuzz tests on Pyle camera with random commands}
-\label{fig:Pyle_Rand_CGI}
-\end{figure*}
+	\begin{tabular}{ |c|c|c|c| }
+		\hline
+		\# Tests & 50 & 500 & 5000 \\
+		\hline
+		\hline
+		Time(s) & 89 & 704 & 7545 \\
+		Timeouts & 0 & 0 & 31  \\
+		HTTP 3XX & 0 & 0 & 0 \\
+		HTTP 4XX & 2 & 8 & 91 \\
+		HTTP 5XX & 0 & 0 & 1 \\
+		\hline
+	\end{tabular}
+	\caption{5550 fuzz tests on Pyle camera with random length, random content CGI}
+	\label{tab:Pyle_Rand_CGI} 
+\end{table}
+
+\begin{table}
+\centering
+	\begin{tabular}{ |c|c|c| }
+		\hline
+		~ & Ubuntu 12.04 VM & RPi 2\\
+		\hline
+		\hline
+		Time(s) & 3909 & 17555 \\
+		Timeouts & 193 & 545  \\
+		HTTP 3XX & 0 & 0 \\
+		HTTP 4XX & 1227 & 1210 \\
+		HTTP 5XX & 65 & 62 \\
+		\hline
+	\end{tabular}
+	\caption{5000 Random CGI commands on the Ubuntu VM and RPi platforms}
+	\label{tab:VMvsPi} 
+\end{table}
+
+%\begin{figure*}
+%\centering
+%\includegraphics[width=0.9\linewidth]{Pyle_Good_CGI}
+%\caption{ 5550 fuzz tests on Pyle camera with valid commands}
+%\label{fig:Pyle_Good_CGI}
+%\end{figure*}
+
+%\begin{figure*}
+%\centering
+%\includegraphics[width=0.9\linewidth]{Pyle_Rand_CGI}
+%\caption{5550 fuzz tests on Pyle camera with random commands}
+%\label{fig:Pyle_Rand_CGI}
+%\end{figure*}
 
 
 
-
+\subsection*{Acknowledgments}
+We would like to thank our shepherd, Dr. Eric Eide in providing invaluable insight and assistance with two poor ECE students completing a CS project.
 
 {\footnotesize \bibliographystyle{acm}
 \bibliography{biblio}}
