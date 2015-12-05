@@ -51,10 +51,9 @@ University of Utah
 
 
 \subsection*{Abstract}
-Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs.  
-We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the efficacy of fuzz testing on these recent types of IoT deployments.
+Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs, where random, potentially invalid inputs are sent. Fuzz testing can be much cheaper than other types of testing and often reveals bugs developers and testers cannot foresee. After reviewing some current research on fuzzing, we decided an interesting application would be to test `Internet of Things' (IoT) devices like IP cameras. We believe that fuzzing a network-connected device can reveal interesting bugs or vulnerabilities, and in the case of security cameras, some of these vulnerabilities may be serious. We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the efficacy of fuzz testing on these recent types of IoT deployments. We used Pathoc within a Bash shell script framework for crafted malice towards the HTTP servers in these cameras, and ran over 250,000 fuzzing tests. We did identify several interesting events and responses from fuzzing tests, but did not identify any critical bugs or serious vulnerabilities in the cameras. 
 
-[TODO] Revisit this section after the paper has been more fully fleshed out[TODO]
+
 
 The specific `call for papers' that we target in the presentation of this research is the 9th USENIX Workshop on Offensive Technologies (WOOT '15). 
 
@@ -228,6 +227,7 @@ Because these tests can take a significant amount of time, and these computers a
 
 
 \section{Results}
+We began this project with this question in mind: \textit{Can we use fuzzing to discover interesting bugs or vulnerabilities in a network-connected device?} At this point in our research, we have not identified any critical bugs in the cameras or inputs that would completely disable the system. We did, however, identify several events or responses that are of interest. We were watching the video output of the cameras during some of the fuzz testing, and we did notice some freezing and lagging of the video feed. We did not record video or attempt to qualify the video output at this stage of our project. 
 
 Perhaps the first major discovery we made when in the information-gathering stage of the project was that each of the cameras used HTTP Basic or Digest access authentication, which encodes the username:password combinations. Wireshark was able to capture the authentication for logging into the cameras in plain text. This has important ramifications, because all an attacker would need to do would be to use Wireshark or some other network protocol analyzer to capture traffic on the network the camera is on. Once the authentication token is discovered, an attacker could append it to the header of any HTTP message desired, and the camera would accept it as authentic. 
 
