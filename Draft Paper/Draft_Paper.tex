@@ -93,7 +93,24 @@ In this section we describe details about the setup of our experiment, the
 cameras we used, how we gathered information and discovered interesting ways to fuzz test them, and the tools and programs that aided us.  
 
 \subsection{IP Cameras}
-The two cameras we purchased were a D-Link Day \& Night Wi-Fi Camera (DCS-934L)~\cite{dlinkCam} and a Pyle Home Indoor Wireless/Wired P2P IP Network Camera (PIPCAM5). Though both cameras supported many network protocols, we focused on fuzzing the \textit{alphapd} and \textit{mini-httpd} HTTP servers and the application layers of each of the cameras. We thought the HTTP server protocols and application layers would be the most interesting to fuzz. Most of the other protocols supported were only client protocols, which we felt would be less interesting to fuzz, yet still valuable. We leave testing these other protocols for future work. 
+The two cameras we purchased were a D-Link Day \& Night Wi-Fi Camera (DCS-934L)~\cite{dlinkCam} and a Pyle Home Indoor Wireless/Wired P2P IP Network Camera (PIPCAM5). The cameras support the following protocols:
+\begin{itemize}
+	\itemsep-.5em
+	\item IPv4, ARP, TCP, UDP, ICMP
+	\item DHCP Client
+	\item NTP Client (D-Link only)
+	\item DNS Client
+	\item DDNS Client
+	\item SMTP Client
+	\item FTP Client
+	\item HTTP Server
+	\item PPPoE
+	\item UPnP port forwarding
+	\item RTP, RTSP, RTCP (D-Link only)
+	\item LLTD (D-Link only)
+	\item GPRS (Pyle only)
+\end{itemize}
+Though both cameras supported many network protocols, we focused on fuzzing the \textit{alphapd} and \textit{mini-httpd} HTTP servers and the application layers of each of the cameras. We thought the HTTP server protocols and application layers would be the most interesting to fuzz. Most of the other protocols supported were only client protocols, which we felt would be less interesting to fuzz, yet still valuable. We leave testing these other protocols for future work. 
 
 
 \subsubsection{Information Gathering}
@@ -292,6 +309,11 @@ An interesting result was also the difference in the time taken to run the same 
 	\caption{5000 Random CGI commands on the Ubuntu VM and RPi platforms}
 	\label{tab:VMvsPi} 
 \end{table}
+
+\section{Future Work}
+We have many ideas to improve this project in the future. One obvious improvement would be to fuzz these devices on multiple protocols, not just the HTTP servers. Any one of these other protocols could provide a potential entry point for an attack. The testing framework could also be improved by recognizing interesting outputs, and repeating the inputs that caused them with slight mutations. This might be a more active approach to identifying interesting vulnerabilities and bugs. An HTTP validator could be used to review the responses from the camera servers to verify correct responses and aid in the identification of invalid or buggy responses. 
+
+One of the main ideas that we did not have time to implement was to record the video output from each camera during the fuzzing process, and `measure' the quality. We would be interested in video lag, frame drops or freezes, or other events that would make the camera unfit for security applications. The measure of quality is difficult to define, and was beyond the scope of our current project. 
 
 %\begin{figure*}
 %\centering
