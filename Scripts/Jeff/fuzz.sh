@@ -45,7 +45,7 @@ do
 	d=$(( ($i*100)/$max ))
 	r=$(( $RANDOM % 100 + 1 )) #Random [1..100]
 	
-pathoc -n 1 -t 5 -e -p -q $ip "$cmd$r$b1$auth" | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.1 2*' &> /dev/null
+pathoc -n 1 -t 5 -e -p -q $ip "$cmd$r$b1$auth" | tee -a "log_$NOW".txt | tee last_cmd.txt | grep 'HTTP/1.1 2' &> /dev/null
 
 	if [ $? == 0 ]; then
 		good=$(( $good+1 ))
@@ -80,8 +80,8 @@ do
   r=$(( $RANDOM % 100)) #Random [0-99]
   d=$(( ($i*100)/$max ))
   echo -ne "Percent Done: $d \r"
- modCase=$(( ($i % 7) )) 
-#modCase=3 #force only one case for now
+ #modCase=$(( ($i % 7) )) 
+modCase=1 #force only one case for now
  case $modCase in
 0)
   #valid request with random 50 chars
@@ -126,7 +126,7 @@ esac
 		#echo "$last_out" >> "log_$NOW""_good.txt"
 	else
 		bad=$(( $bad+1 ))
-		grep "HTTP/1.[0-1] 5\|Invalid server response\|Error connecting to" last_cmd.txt
+		grep "HTTP/1.[0-1] 5\|Invalid server response\|Error connecting to\|(null)" last_cmd.txt
 		if [ $? == 0 ]; then
 
 		    last_out=$(<last_cmd.txt)
