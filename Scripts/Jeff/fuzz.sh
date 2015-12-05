@@ -80,8 +80,8 @@ do
   r=$(( $RANDOM % 100)) #Random [0-99]
   d=$(( ($i*100)/$max ))
   echo -ne "Percent Done: $d \r"
- #modCase=$(( ($i % 7) )) 
-modCase=1 #force only one case for now
+ modCase=$(( ($i % 7) )) 
+#modCase=3 #force only one case for now
  case $modCase in
 0)
   #valid request with random 50 chars
