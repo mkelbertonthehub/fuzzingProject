@@ -256,7 +256,14 @@ Table~\ref{tab:Pyle_Good_CGI} sums up the distribution of three separate test ru
 
 An interesting result was also the difference in the time taken to run the same command on a Ubuntu VM comapred to the Raspberry Pi. We noticed that although the small computer is very powerful, it had a significant time overhead in our setup. The results of a test consisting of 5000 valid CGI commands to the Pyle camera is shown in table~\ref{tab:VMvsPi}. As we can see, they both generated a similar amount of HTTP responses in the 400 and 500 range, but the Rpi took almost 450\% longer to do it. We suspect it may have to do with the smaller computer having slower I/O speeds for both the USB flash drive and the network interface. All USB ports are also run on one controller, leading to a slowdown if many are used at the same time.
 
-\begin{table}
+[TODO- refine and analyze this cause more]
+We found we could trigger an `HTTP 500 Internal Server Error' with a very long string (70000 byte) in the GET request. The pathoc command looked like 
+\begin{verbatim} pathoc -n 1 -t 5 -e -p -q  $ip 
+`get:@70000,ascii:b@100,ascii:h$auth '  \end{verbatim}
+
+[TODO- add some distributions for the full 250,000 tests, including non-HTTP coded events]
+
+\begin{table}[here]
 \centering
 	\begin{tabular}{ |c|c|c|c|c| }
 		\hline
@@ -274,7 +281,7 @@ An interesting result was also the difference in the time taken to run the same 
 	\label{tab:Pyle_Good_CGI} 
 \end{table}
 
-\begin{table}
+\begin{table}[here]
 \centering
 	\begin{tabular}{ |c|c|c|c| }
 		\hline
