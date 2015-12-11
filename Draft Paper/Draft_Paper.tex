@@ -51,7 +51,9 @@ University of Utah
 
 
 \subsection*{Abstract}
-Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs, where random, potentially invalid inputs are sent. Fuzz testing can be much cheaper than other types of testing and often reveals bugs developers and testers cannot foresee. After reviewing some current research on fuzzing, we decided an interesting application would be to test `Internet of Things' (IoT) devices like IP cameras. With the growing proliferation of these IoT devices, they could become a very attractive target for malicious attacks. Attacks on these devices would also greatly compromise security. We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the efficacy of fuzz testing on these recent types of IoT deployments. We used a fuzzing tool called Pathoc within a Bash shell script framework for crafted malice towards the HTTP servers in these cameras, and ran over 250,000 fuzzing tests. We did identify several interesting events and responses from fuzzing tests, but did not identify any critical bugs or serious vulnerabilities in the cameras. 
+
+With the growing proliferation of Internet of Things (IoT) devices, they could become a very attractive target for malicious attacks. Attacks on these devices, especially ones used for surveillance, would also greatly compromise security. A commerically available example of this is a wireless IP camera.
+Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs, where random, potentially invalid inputs are sent. Fuzz testing can be much cheaper than other types of testing and often reveals bugs developers and testers cannot foresee. We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the quality of fuzz testing on these recent types of IoT deployments. We used a fuzzing tool called Pathoc within a Bash shell script framework for crafted malice towards the HTTP servers in these cameras, and ran over 250,000 fuzzing tests. We did identify several interesting events and responses from fuzzing tests, but did not identify any critical bugs or serious vulnerabilities in the cameras. 
 
 
 
@@ -67,8 +69,7 @@ After an initial period of exploring current research in fuzzing, we settled on 
 Initially, we set out to design our own fuzzer, but in researching the subject showed that may tools were already available, which allowed us to focus on trying to find undiscovered bugs and vulnerabilities, instead of the effectiveness of an implementation. A very basic and highly proliferated technology deployed on the internet is an HTTP server. But because of this prevalence, popular servers such as Apache have been thoroughly tested and documented. However, more and more devices are being connected, with an uptake in the Internet of Things (IoT) mentality. Therefore, we chose wireless IP cameras as the platform to fuzz test. These are some of the most widely available IoT devices for consumers, and could become an attractive entry point for attackers. We found that the two devices we purchased ran basic HTTP servers, and we could use tools made for these applications. If these devices could be accessed by unauthorized third parties, or be made unable to perform their duties, this could be a serious issue. We believe that fuzz testing can be an effective way to study if these bugs or vulnerabilities exist. 
 
 
-\section{Related Work}
-An important first step into researching this process is to obtain a more clear idea of how this test technique was created, hoe it is currently implemented, and how it is evolving.  
+\section{Related Work} 
 
 One of the first attempts at a random input tester was done by Miller et. al.~\cite{millerUNIX}. Their work consisted of creating small programs for UNIX that would generate random strings that would then be piped to various programs of a few UNIX distributions. They found, at the time of publication in 1990, that they could cause roughly a third of the tested utilities to crash or hang with the generated inputs, some of which even caused UNIX crashes.
 
@@ -130,7 +131,6 @@ We found the following cgi pages for the Pyle camera:
 	var R320_240=8;
 	var R640_480=32;
 	var ptz_type=0;	
-	if(top.client_minor==4) ptz_type=1;
 	var PTZ_STOP=1;
 	var TILT_UP=0;
 	var TILT_UP_STOP=1;
@@ -257,7 +257,7 @@ We found we could trigger an `HTTP 500 Internal Server Error' with a very long s
 
 [TODO- add some distributions for the full 250,000 tests, including non-HTTP coded events]
 
-\begin{table}[here]
+\begin{table}[h]
 \centering
 	\begin{tabular}{ |c|c|c|c|c| }
 		\hline
@@ -275,7 +275,7 @@ We found we could trigger an `HTTP 500 Internal Server Error' with a very long s
 	\label{tab:Pyle_Good_CGI} 
 \end{table}
 
-\begin{table}[here]
+\begin{table}[h]
 \centering
 	\begin{tabular}{ |c|c|c|c| }
 		\hline
@@ -293,7 +293,7 @@ We found we could trigger an `HTTP 500 Internal Server Error' with a very long s
 	\label{tab:Pyle_Rand_CGI} 
 \end{table}
 
-\begin{table}[here]
+\begin{table}[h]
 \centering
 	\begin{tabular}{ |c|c|c| }
 		\hline
