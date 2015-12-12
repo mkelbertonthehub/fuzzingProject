@@ -52,7 +52,7 @@ University of Utah
 
 \subsection*{Abstract}
 
-With the growing proliferation of Internet of Things (IoT) devices, they could become a very attractive target for malicious attacks. Attacks on these devices, especially ones used for surveillance, would also greatly compromise security. A commerically available example of this is a wireless IP camera.
+With the growing proliferation of Internet of Things (IoT) devices, they could become a very attractive target for malicious attacks. Attacks on these devices, especially ones used for surveillance, could also greatly compromise security. A commerically available example of this is a wireless IP camera.
 Fuzz testing, or fuzzing, is a simple, automated method to find bugs and vulnerabilities in programs, where random, potentially invalid inputs are sent. Fuzz testing can be much cheaper than other types of testing and often reveals bugs developers and testers cannot foresee. We use fuzzing methods on two different types of Wi-Fi cameras in order to evaluate the quality of fuzz testing on these recent types of IoT deployments. We used a fuzzing tool called Pathoc within a Bash shell script framework for crafted malice towards the HTTP servers in these cameras, and ran over 250,000 fuzzing tests. We did identify several interesting events and responses from fuzzing tests, but did not identify any critical bugs or serious vulnerabilities in the cameras. 
 
 
@@ -61,12 +61,12 @@ The specific `call for papers' that we target in the presentation of this resear
 
 \section{Introduction}
 
-Fuzz testing is a method of testing in which random, potentially invalid inputs are sent to a program or service in order to test for vulnerabilities. It is often used as either a gray or black-box testing platform for security testing. Fuzz testing can be a very cheap and effective implementation of testing as many inputs can be generated, sent, and analyzed automatically, without the need for a human to monitor. However, a truly random test input could easily not provide anything useful in a reasonable amount of time. Therefore, many solutions (citations needed) propose a different method where random mutation of good inputs is used so that requests that are close to being correct are used. 
-Because the world has become more internet-connected than ever, fuzz testing can be an important tool for developers as network-facing interfaces can experience any input, and need to be tested for this randomness. However, many functions are very state-driven, and a true, random test may only test a single interface, and not the whole system. Because of this, many of these fuzz testers must be stateful in order to do a complete test. Because of many security issues with the current Internet architecture, there are obviously some security measures put in place to almost anything that is deployed on a network, even if it is meant to only be local. Therefore, something as simple as logging into an interface needs to be taken into account in order to get more meaningful tests.
+A very basic and highly proliferated technology deployed on the internet is an HTTP server. But because of this prevalence, popular servers such as Apache have been thoroughly tested and documented. However, more and more devices are being connected, with an uptake in the Internet of Things (IoT) mentality. 
+Fuzz testing is a method of testing in which random, potentially invalid inputs are sent to a program or service in order to test for vulnerabilities. It is often used as either a gray or black-box testing platform for security testing. Fuzz testing can be a very cheap and effective implementation of testing as many inputs can be generated, sent, and analyzed automatically, without the need for a human to monitor. However, a truly random test input could easily not provide anything useful in a reasonable amount of time. Therefore, many solutions (citations needed) propose a different method where random mutation of good inputs is used so that requests that are close to being correct are used.
 
-After an initial period of exploring current research in fuzzing, we settled on this goal: \textit{Can we use fuzzing to discover interesting bugs or vulnerabilities in a network-connected device?} Reaching this goal involved several steps: choosing a service to test; deciding how to generate random inputs; determining how to distinguish "good" and "bad" test results; implementing the random tester; and evaluating the effectiveness of the test procedure. 
+Because the world has become more internet-connected than ever, fuzz testing can be an important tool for developers as network-facing interfaces can experience any input, and need to be tested for this randomness. However, many functions are very state-driven, and a true, random test may only test a single interface, and not the whole system. Because of this, many of these fuzz testers must be stateful in order to do a complete test. Because of many security issues with the current Internet architecture, there are obviously some security measures put in place to almost anything that is deployed on a network, even if it is meant to only be local. Therefore, something as simple as logging into an interface needs to be taken into account in order to get more meaningful tests. One question that arises is: \textit{Can we use fuzzing to discover interesting bugs or vulnerabilities in a network-connected device?} 
 
-Initially, we set out to design our own fuzzer, but in researching the subject showed that may tools were already available, which allowed us to focus on trying to find undiscovered bugs and vulnerabilities, instead of the effectiveness of an implementation. A very basic and highly proliferated technology deployed on the internet is an HTTP server. But because of this prevalence, popular servers such as Apache have been thoroughly tested and documented. However, more and more devices are being connected, with an uptake in the Internet of Things (IoT) mentality. Therefore, we chose wireless IP cameras as the platform to fuzz test. These are some of the most widely available IoT devices for consumers, and could become an attractive entry point for attackers. We found that the two devices we purchased ran basic HTTP servers, and we could use tools made for these applications. If these devices could be accessed by unauthorized third parties, or be made unable to perform their duties, this could be a serious issue. We believe that fuzz testing can be an effective way to study if these bugs or vulnerabilities exist. 
+To address this question, wireless IP cameras were chosen as the platform to fuzz test. These are some of the most widely available IoT devices for consumers, and could become an attractive entry point for attackers. The two devices we purchased ran basic HTTP servers, and we could use tools made for these applications. If these devices could be accessed by unauthorized third parties, or be made unable to perform their duties, this could be a serious issue. We believe that fuzz testing can be an effective way to study if these bugs or vulnerabilities exist. 
 
 
 \section{Related Work} 
@@ -81,10 +81,10 @@ AspFuzz~\cite{aspfuzz} was another type of fuzzer, but this one was created and 
 
 While these papers looked like they had gathered results from their fuzz testing, they did not release their prototype to the public, and therefore we had to find other publicly available tools that would be able to create fuzz tests. A few of the papers read, such as AspFuzz, mentioned the Peach Fuzzing Platform~\cite{peach} as a tool widely used in this type of testing. We were also able to find widely available tools like AutoFuzz~\cite{autofuzz}, American Fuzzy Lop (AFL)~\cite{afl}, and Pathod/Pathoc~\cite{pathod}. More discussion on these tools is presented in section 3.1.2.
 
-We tried to find research related to fuzzing internet-connected devices, but were unable to. Therefore, we thought this might be a good starting point for our research. We thought this would be important because more and more `things' are connecting to the internet today, and all of these `Internet of Things' devices have network protocols that would be interesting to test. 
+When specifically referring to fuzz testing on IoT devices, we were unable to find much research on this subject. Therefore, we chose this specific field to focus our research.
 
 \section{Experimental Methodology}
-In order to create meaningful experiments, the devices under test had to be purchased and evaluated further. Points of attack had to be gathered, evaluated, and implemented in the available tools in order to better attempt to find interesting results.   
+In order to create meaningful experiments, the devices under test had to be purchased and evaluated further. Points of attack were gathered, evaluated, and implemented using the available fuzzing tools in order to better attempt to find interesting results.   
 
 \subsection{IP Cameras}
 The two cameras we purchased were a D-Link Day \& Night Wi-Fi Camera (DCS-934L)~\cite{dlinkCam} and a Pyle Home Indoor Wireless/Wired P2P IP Network Camera (PIPCAM5). The cameras support the following protocols:
@@ -161,19 +161,19 @@ It is important to note that the DLink camera implemented the CGI commands using
 
 
 \subsubsection{Tools}
-We began by exploring a number of available network fuzzers, including Peach, AutoFuzz, American Fuzzy Lop (AFL), and Pathoc. In investigating AFL, we found that it was a tool mainly for file testing, where good files as inputs to tools would be mutated and input back into a program for evaluation. We could have used this to create a file with a valid GET request, ran AFL to mutate, and send the file through something like netcat, but this would be more difficult to control in what gets sent to the servers. This may be a valuable tool for future work in testing the FTP protocols in the cameras.
+Pathoc was used to implement HTTP fuzzing. Pathoc turned out to be fairly simple and straightforward to use, as it was just a command line interface tool that generated HTTP requests such as GET and POST. Because we focused on HTTP, this single protocol application was still very appealing to us. This program allowed us to specify the type of HTTP command, and inject whatever we wanted into the header and body fields while still creating a command with valid syntax. It also has fuzzing capabilities as it is able to inject random bytes anywhere in the request, as well as generate random strings of a desired length and place them in portions of a request. Because of its ease of use and the capability to be used in a simple Bash script, we chose Pathoc v0.14 as our fuzzing platform.
 
-AutoFuzz has built in support for MSN, SMTP, and FTP protocols, and relied on capturing actual traffic in order to create a state machine. While we did find that both of the cameras used in testing supported both SMTP and FTP, they were only clients, and therefore less likely to accept inputs. We attempted to, but were ultimately not able to capture SMTP or FTP traffic from the cameras. AutoFuzz did not have support for HTTP, so this tool was abandoned.
+There are a number of different network fuzzers available, including Peach, AutoFuzz, American Fuzzy Lop (AFL). AFL, would be useful as a tool mainly for file testing, where good files as inputs to tools would be mutated and input back into a program for evaluation. This may be a valuable tool for future work in testing the FTP protocols in the cameras.
 
-Peach was another platform that was looked at extensively. The Peach platform relies on ``pits" that define the fields in the standard being tested, as well as the procedure that should be used in testing. Their website shows that they have support for protocols such as HTTP, DHCP, IPv4, IPv6, and IoT protocols like CoAP. However, these pits are how this company makes money, and we were not willing to purchase them in order to evaluate if they would work for us or not.
+AutoFuzz has built in support for MSN, SMTP, and FTP protocols, and relied on capturing actual traffic in order to create a state machine. While both of the cameras used in testing supported both SMTP and FTP, they were only clients, and therefore less likely to accept inputs. We attempted to, but were ultimately not able to capture SMTP or FTP traffic from the cameras.
 
-Pathoc turned out to be fairly simple and straightforward to use, as it was just a command line interface tool that generated HTTP requests such as GET and POST. Because we focused on HTTP, this single protocol application was still very appealing to us. This program allowed us to specify the type of HTTP command, and inject whatever we wanted into the header and body fields while still creating a command with valid syntax. It also has fuzzing capabilities as it is able to inject random bytes anywhere in the request, as well as generate random strings of a desired length and place them in portions of a request. Because of its ease of use and the capability to be used in a simple Bash script, we chose Pathoc v0.14 as our fuzzing platform.
+The Peach platform relies on ``pits" that define the fields in the standard being tested, as well as the procedure that should be used in testing. Their website shows that they have support for protocols such as HTTP, DHCP, IPv4, IPv6, and IoT protocols like CoAP. However, these pits are how this company makes money, and we were not willing to purchase them in order to evaluate if they would work for us or not.
 
 
 \section{Implementation}
 
 \subsection{Pathoc}
-We used Pathoc for crafted malice towards the mini\_httpd and alphapd servers. Pathoc has a built in function to do many requests at one time, but we found that this method had all of the GET requests on a single TCP connection, and therefore made it more difficult to diagnose in programs such as Wireshark. Therefore, since Pathoc can easily be implemented using the command line interface, a shell script was used as a wrapper that would invoke Pathoc multiple times, giving a new HTTP request everytime. In this way, we could also control fairly easily the commands for Pathoc to run, instead of having a single command run multiple times.
+We used Pathoc for crafted malice towards the mini\_httpd and alphapd servers. Pathoc has a built in function to do many requests at one time, but we found that this method had all of the GET requests on a single TCP connection, and therefore made it more difficult to diagnose in programs such as Wireshark. Therefore, since Pathoc can easily be implemented using the Linux command line interface, a shell script was used as a wrapper that would invoke Pathoc multiple times, giving a new HTTP request everytime. In this way, we could also control fairly easily the commands for Pathoc to run, instead of having a single command run multiple times.
 
 
 
@@ -215,17 +215,15 @@ We also wrote a separate script to scour the log files and aggregate the total n
 
 
 \subsection{Platforms}
-The primary vehicle for running Pathoc was a Bash script running on a virtual Linux machine inside Oracle's VM VirtualBox 5.0.10. Two different Windows 10 laptops were used to run the VMs. One computer ran a 32-bit Ubuntu 12.04 VM with 2.0GiB of dedicated RAM. The other computer was using the All-in-one SDN App Development Starter VM, an image based off of 64-bit Ubuntu 14.04, from SDNHub.org.
+Pathoc was run in a Bash script on a virtual Linux machine inside Oracle's VM VirtualBox 5.0.10. Two different Windows 10 laptops were used to run the  Linux Virtual Machines (VMs). One computer ran a 32-bit Ubuntu 12.04 VM with 2.0GiB of dedicated RAM. The other computer was using the All-in-one SDN App Development Starter VM, an image based off of 64-bit Ubuntu 14.04, from SDNHub.org.
 
-Because these tests can take a significant amount of time, and these computers are also used for other things, a third platform was used to collect fuzzing data. A Raspberry Pi 2 model B (RPi) was used so that Pathoc could be run for an extended amount of time (e.g. over 24 hours) without the platform needing to be used for something else. The Raspberry Pi was running Raspbian, a derivation of Debian, kernel version 4.1.7. The Pi used a USB 802.11n WiFi adapter to connect to the local network, and the fuzzing script and repository for the log files were placed in a connected 16GB USB flash drive.
+Because these tests took a significant amount of time, and these computers were unavailable for long testing runs, a third platform was used to collect fuzzing data. A Raspberry Pi 2 model B (RPi) was used so that Pathoc could be run for an extended amount of time (e.g. over 24 hours) without the platform needing to be used for something else. The Raspberry Pi was running Raspbian, a derivation of Debian, kernel version 4.1.7. The Pi used a USB 802.11n WiFi adapter to connect to the local network, and the fuzzing script and repository for the log files were placed in a connected 16GB USB flash drive.
 
 
 \section{Results}
 We began our research with this question in mind: \textit{Can we use fuzzing to discover interesting bugs or vulnerabilities in a network-connected device?} At this point in our research, we have not identified any critical bugs in the cameras or inputs that would completely disable the system. We did, however, identify several events or responses that are of interest. We were watching the video output of the cameras during some of the fuzz testing, and we did notice some freezing and lagging of the video feed. We did not record video or attempt to qualify the video output at this stage of our project. 
 
-Perhaps the first major discovery we made when in the information-gathering stage of the project was that each of the cameras used HTTP Basic or Digest access authentication, which encodes the username:password combinations. Wireshark was able to capture the authentication for logging into the cameras in plain text. This has important ramifications, because all an attacker would need to do would be to use Wireshark or some other network protocol analyzer to capture traffic on the network the camera is on. Once the authentication token is discovered, an attacker could append it to the header of any HTTP message desired, and the camera would accept it as authentic. 
-
-We needed a method of weeding out the `good' responses from the `bad' responses. We decided to look at the several categories of HTTP responses: 
+TO weed out the `good' responses from the `bad' responses, the HTTP response codes were examined. There are several categories of HTTP responses: 
 \begin{enumerate}
 \item HTTP 2xx - successfully received, understood, and accepted.
 \item HTTP 3xx - redirection, or further action required to fulfill request.
@@ -241,10 +239,7 @@ We decided to categorize all but HTTP 2xx responses as `bad'. We also discovered
 \end{enumerate}
 
 
-
-
-[EDIT ME]
-As of today [Dec 4,2015] we have run more than 250,700 fuzzing tests. We are in the process of aggregating data and trying to understand how best to display it. We have not as of yet found any input that would disable the cameras completely, though some inputs do cause slow downs. Some of the interesting events like connection timeouts may be much more interesting if we could determine that the reason the connection could not be made was that the server had been disabled or was restarting itself. There is future work in further analyzing the data that we have collected. We have the log files that show the inputs that generated these responses. Future work would be to gather and replay these inputs and scrutinize the outputs further. 
+As of Dec 4,2015 we have run more than 250,700 fuzzing tests. As of yet, there has not been any input found that would completely disable the cameras. However, some inputs do cause slow downs. Some of the interesting events like connection timeouts may be much more interesting if we could determine that the reason the connection could not be made was that the server had been disabled or was restarting itself. There is future work in further analyzing the data that we have collected. We have the log files that show the inputs that generated these responses. Future work would be to gather and replay these inputs and scrutinize the outputs further. 
 
 Table~\ref{tab:Pyle_Good_CGI} sums up the distribution of three separate test run sizes for CGI commands with good numeric inputs (within range 1-100). Table~\ref{tab:Pyle_Rand_CGI} shows the same number of tests for purely random alpha-numeric commands.
 
@@ -311,21 +306,25 @@ We found we could trigger an `HTTP 500 Internal Server Error' with a very long s
 	\label{tab:VMvsPi} 
 \end{table}
 
+A major discovery made, unrelated to fuzzing, occurred in the information-gathering stage of the project. Both of the cameras used HTTP Basic or Digest access authentication, which encodes the username:password combinations. Wireshark was able to capture the authentication for logging into the cameras in plain text. This has important ramifications, because all an attacker would need to do would be to use Wireshark or some other network protocol analyzer to capture traffic on the network the camera is on. Once the authentication token is discovered, an attacker could append it to the header of any HTTP message desired, and the camera would accept it as authentic. 
+
+\begin{figure}[h b]
+\centering
+\includegraphics[width=1.9\linewidth]{dist}
+\caption{Distribution of 205,000 Response Codes}
+\label{fig:dist}
+\end{figure}
+
 \section{Future Work}
 We have many ideas to improve this project in the future. One obvious improvement would be to fuzz these devices on multiple protocols, not just the HTTP servers. Any one of these other protocols could provide a potential entry point for an attack. The testing framework could also be improved by recognizing interesting outputs, and repeating the inputs that caused them with slight mutations. This might be a more active approach to identifying interesting vulnerabilities and bugs. An HTTP validator could be used to review the responses from the camera servers to verify correct responses and aid in the identification of invalid or buggy responses. 
 
 One of the main ideas that we did not have time to implement was to record the video output from each camera during the fuzzing process, and `measure' the quality. We would be interested in video lag, frame drops or freezes, or other events that would make the camera unfit for security applications. The measure of quality is difficult to define, and was beyond the scope of our current project. 
 
-%\begin{figure*}
-%\centering
-%\includegraphics[width=0.9\linewidth]{Pyle_Good_CGI}
-%\caption{ 5550 fuzz tests on Pyle camera with valid commands}
-%\label{fig:Pyle_Good_CGI}
-%\end{figure*}
+
 
 %\begin{figure*}
 %\centering
-%\includegraphics[width=0.9\linewidth]{Pyle_Rand_CGI}
+%\includegraphics[width=1.9\linewidth]{Pyle_Rand_CGI}
 %\caption{5550 fuzz tests on Pyle camera with random commands}
 %\label{fig:Pyle_Rand_CGI}
 %\end{figure*}
